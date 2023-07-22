@@ -12,10 +12,13 @@ async function authenticate(req, res, next) {
 
     const payload = jwt.decode(token);
 
-    console.log({ destination: payload.aud, userID: Number(payload.sub) });
-
-    const session = await prisma.session.findFirst({
-      where: { AND: { destination: payload.aud, userID: Number(payload.sub) } },
+    const session = await prisma.session.findUniqueOrThrow({
+      where: {
+        destination_userID: {
+          destination: payload.aud,
+          userID: Number(payload.sub),
+        },
+      },
     });
 
     const signedToken = jwt.verify(token, session.hash);
@@ -25,10 +28,10 @@ async function authenticate(req, res, next) {
     });
 
     req.user = user;
+    res.locals.aud = session.destination;
 
     next();
   } catch (error) {
-    console.log(error.message);
     next(error);
   }
 }
