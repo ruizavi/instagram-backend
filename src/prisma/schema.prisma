@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.sqlite"
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  username String @unique
+
+  profile    Profile?
+  follower   Follower[] @relation("follower")
+  followings Follower[] @relation("following")
+
+  posts    Post[]
+  comments Comment[]
+  votes    Vote[]
+  sessions Session[]
+}
+
+model Session {
+  hash        String
+  destination String @unique
+  userID      Int
+
+  user User @relation(fields: [userID], references: [id])
+
+  @@id([destination, userID])
+}
+
+model Profile {
+  userID    Int     @id
+  firstName String
+  lastName  String
+  bio       String?
+  photo     String?
+
+  user User @relation(fields: [userID], references: [id])
+}
+
+model Follower {
+  followerID  Int
+  followingID Int
+
+  follower  User @relation("follower", fields: [followerID], references: [id])
+  following User @relation("following", fields: [followingID], references: [id])
+
+  @@id([followerID, followingID])
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  userID    Int
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @ignore
+  deletedAt DateTime @ignore
+  isPrivate Boolean  @default(false)
+
+  user     User      @relation(fields: [userID], references: [id])
+  media    Media[]
+  comments Comment[]
+  votes    Vote[]
+}
+
+model Media {
+  id     Int    @id @default(autoincrement())
+  postID Int
+  path   String
+
+  post Post @relation(fields: [postID], references: [id])
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  postID  Int
+  userID  Int
+  comment String
+
+  post Post @relation(fields: [postID], references: [id])
+  user User @relation(fields: [userID], references: [id])
+}
+
+model Vote {
+  id     Int @id @default(autoincrement())
+  postID Int
+  userID Int
+
+  post Post @relation(fields: [postID], references: [id])
+  user User @relation(fields: [userID], references: [id])
+}
