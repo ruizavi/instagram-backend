@@ -9,8 +9,8 @@ import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.routes.js";
-import e from "express";
 import morgan from "morgan";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -34,7 +34,7 @@ const apollo = new ApolloServer({
 
 await apollo.start();
 
-app.use(morgan("dev"))
+app.use(morgan("dev"));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -48,14 +48,6 @@ app.use(
     }),
   })
 );
-
-function errorHandler (err, req, res, next) {
-  if (res.headersSent) {
-    return next(err)
-  }
-  res.status(500)
-  res.json({ error: err })
-}
 
 app.use(errorHandler);
 

@@ -6,8 +6,10 @@ import {
 
 async function signup(req, res, next) {
   const body = req.body;
+
+  const data = {...body, photo: req.file}
   try {
-    await signupService(body);
+    await signupService(data);
 
     res.sendStatus(203);
   } catch (error) {

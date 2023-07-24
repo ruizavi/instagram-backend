@@ -4,10 +4,14 @@ import jwt from "jsonwebtoken";
 import argon from "argon2";
 import { SignInBody, SignUpBody } from "../validations/User.js";
 import prisma from "../prisma.js";
+import { readFile } from "fs/promises";
 
 async function createUser(data) {
   const { email, firstName, lastName, password, username, bio, photo } =
     SignUpBody.parse(data);
+
+  const photoBuffer = await readFile(photo.path);
+
   const hashPass = await argon.hash(password);
 
   await prisma.user.create({
@@ -15,13 +19,9 @@ async function createUser(data) {
       email,
       username,
       password: hashPass,
-      profile: { create: { firstName, lastName, bio, photo } },
+      profile: { create: { firstName, lastName, bio, photo: photoBuffer } },
     },
   });
-}
-
-async function signupService(data) {
-  await createUser(data);
 }
 
 async function validatePassword(hash, pass) {
@@ -50,15 +50,8 @@ async function createSession(id) {
   return token;
 }
 
-async function signoutService(id, aud) {
-  await prisma.session.delete({
-    where: {
-      destination_userID: {
-        destination: aud,
-        userID: id,
-      },
-    },
-  });
+async function signupService(data) {
+  await createUser(data);
 }
 
 async function signinService(payload) {
@@ -75,6 +68,17 @@ async function signinService(payload) {
   const token = await createSession(user.id);
 
   return token;
+}
+
+async function signoutService(id, aud) {
+  await prisma.session.delete({
+    where: {
+      destination_userID: {
+        destination: aud,
+        userID: id,
+      },
+    },
+  });
 }
 
 export { signupService, signinService, signoutService };

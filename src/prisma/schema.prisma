@@ -41,7 +41,7 @@ model Profile {
   firstName String
   lastName  String
   bio       String?
-  photo     String?
+  photo     Bytes?
 
   user User @relation(fields: [userID], references: [id])
 }
@@ -72,9 +72,9 @@ model Post {
 }
 
 model Media {
-  id     Int    @id @default(autoincrement())
-  postID Int
-  path   String
+  id       Int   @id @default(autoincrement())
+  postID   Int
+  resource Bytes
 
   post Post @relation(fields: [postID], references: [id])
 }
