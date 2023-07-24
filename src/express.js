@@ -8,9 +8,9 @@ import { resolvers } from "./graphql/resolvers.js";
 import { ApolloServer } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { fileURLToPath } from "url";
-import authRoutes from "./routes/auth.routes.js";
 import morgan from "morgan";
 import errorHandler from "./middleware/errorHandler.js";
+import v1Routes from "./routes/routes.js";
 
 const app = express();
 
@@ -36,10 +36,10 @@ await apollo.start();
 
 app.use(morgan("dev"));
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(authRoutes);
+app.use("/api/v1", v1Routes);
 app.use(
   "/api/graphql",
   expressMiddleware(apollo, {
@@ -48,7 +48,6 @@ app.use(
     }),
   })
 );
-
 app.use(errorHandler);
 
 export default httpServer;
