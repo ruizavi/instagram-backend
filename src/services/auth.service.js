@@ -24,7 +24,7 @@ async function signupService(data) {
   await createUser(data);
 }
 
-function validatePassword(hash, pass) {
+async function validatePassword(hash, pass) {
   return argon.verify(hash, pass);
 }
 
@@ -40,7 +40,7 @@ async function createSession(id) {
 
   const token = jwt.sign({ id }, hash, {
     audience: aud,
-    subject: String(user.id),
+    subject: String(id),
   });
 
   await prisma.session.create({
@@ -48,6 +48,17 @@ async function createSession(id) {
   });
 
   return token;
+}
+
+async function signoutService(id, aud) {
+  await prisma.session.delete({
+    where: {
+      destination_userID: {
+        destination: aud,
+        userID: id,
+      },
+    },
+  });
 }
 
 async function signinService(payload) {
@@ -61,7 +72,9 @@ async function signinService(payload) {
 
   if (!isPassMatch) throw new Error();
 
-  return await createSession(user.id);
+  const token = await createSession(user.id);
+
+  return token;
 }
 
-export { signupService, signinService };
+export { signupService, signinService, signoutService };

@@ -28,7 +28,7 @@ async function authenticate(req, res, next) {
     });
 
     req.user = user;
-    res.locals.aud = session.destination;
+    req.user.session = session;
 
     next();
   } catch (error) {
