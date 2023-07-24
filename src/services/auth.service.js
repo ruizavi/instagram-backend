@@ -10,7 +10,11 @@ async function createUser(data) {
   const { email, firstName, lastName, password, username, bio, photo } =
     SignUpBody.parse(data);
 
-  const photoBuffer = await readFile(photo.path);
+  let photoBuffer = null;
+  
+  if (photo != null) {
+    photoBuffer = await readFile(photo.path);
+  }
 
   const hashPass = await argon.hash(password);
 

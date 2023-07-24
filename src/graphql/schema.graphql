@@ -13,11 +13,8 @@ type Profile {
   bio: String
   photo: String
   noOfFollowings: Int
-  followers: [Profile]
   noOfFollowers: Int
-  following: [Profile]
   noOfPosts: Int
-  posts: [Post]
 }
 
 type Post {
@@ -34,7 +31,7 @@ type Post {
 type Media {
   id: Int
   postID: Int
-  path: String
+  resource: String
 }
 
 type Comment {
@@ -45,8 +42,7 @@ type Comment {
 }
 
 type Query {
-  user(id: Int): User
+  user: User
   profile(id: Int): Profile
-  post(id: Int): Post
   posts: [Post]
 }

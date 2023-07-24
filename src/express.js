@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 import morgan from "morgan";
 import errorHandler from "./middleware/errorHandler.js";
 import v1Routes from "./routes/routes.js";
+import authenticate from "./middleware/authenticate.js";
 
 const app = express();
 
@@ -34,7 +35,7 @@ const apollo = new ApolloServer({
 
 await apollo.start();
 
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -42,6 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", v1Routes);
 app.use(
   "/api/graphql",
+  authenticate,
   expressMiddleware(apollo, {
     context: async ({ req }) => ({
       user: req.user,
