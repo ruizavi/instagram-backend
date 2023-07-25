@@ -1,5 +1,6 @@
-import httpServer from "./express.js";
+import app from "./express.js";
 
-await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+app.listen(4000, () => {
+  console.log(`🚀 Server ready at http://localhost:4000/`);
+});
 
-console.log(`🚀 Server ready at http://localhost:4000/`);
