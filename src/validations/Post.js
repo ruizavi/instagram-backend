@@ -6,4 +6,10 @@ const NewPost = z.object({
   user: z.number(),
 });
 
-export { NewPost };
+const NewComment = z.object({
+  comment: z.string(),
+  postID: z.number(),
+  userID: z.number,
+});
+
+export { NewPost, NewComment };

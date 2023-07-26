@@ -74,7 +74,7 @@ model Post {
 }
 
 model Media {
-  id       Int   @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   postID   Int
   resource String
 
@@ -82,10 +82,11 @@ model Media {
 }
 
 model Comment {
-  id      Int    @id @default(autoincrement())
-  postID  Int
-  userID  Int
-  comment String
+  id        Int      @id @default(autoincrement())
+  postID    Int
+  userID    Int
+  comment   String
+  createdAt DateTime @default(now())
 
   post Post @relation(fields: [postID], references: [id])
   user User @relation(fields: [userID], references: [id])

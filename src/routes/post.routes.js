@@ -1,7 +1,14 @@
 import { Router } from "express";
 import authenticate from "../middleware/authenticate.js";
 import upload from "../middleware/multer.js";
-import { createPost, listPosts } from "../controllers/post.controller.js";
+import {
+  addComment,
+  addVote,
+  createPost,
+  listPosts,
+  removeVote,
+  viewComment,
+} from "../controllers/post.controller.js";
 
 const router = Router();
 
@@ -19,21 +26,14 @@ const router = Router();
  *  - status: 203
  */
 router.post("/", authenticate, upload.array("media", 8), createPost);
-// Carga posts para la vista principal del usuario
-router.get("/", authenticate, listPosts)
+router.get("/", authenticate, listPosts);
 
-router.get("/:id")
+router.get("/:id");
 
-//Añadir comentario
-router.post("/:id/comment")
-//Lista comentarios de la publicacion
-router.get("/:id/comment")
+router.post("/:id/comment", authenticate, addComment);
+router.get("/:id/comment", authenticate, viewComment);
 
-//Da me gusta a la publicacion
-router.get("/:id/vote")
-//Retira me gusta a la publicacion
-router.get("/:id/unvote")
-
-
+router.get("/:id/vote", authenticate, addVote);
+router.get("/:id/unvote", authenticate, removeVote);
 
 export default router;
