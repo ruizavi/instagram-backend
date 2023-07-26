@@ -13,11 +13,11 @@ async function createPostService(data) {
 
   const resources = await bufferedFiles(media);
 
-  await prisma.post.create({
+  return await prisma.post.create({
     data: {
       userID: user,
       body: description,
-      media: { create: { resource: resources } },
+      media: { create: resources },
     },
   });
 }
