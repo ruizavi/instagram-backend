@@ -93,9 +93,10 @@ model Comment {
 }
 
 model Vote {
-  id     Int @id @default(autoincrement())
   postID Int
   userID Int
+
+  @@id([postID, userID])
 
   post Post @relation(fields: [postID], references: [id])
   user User @relation(fields: [userID], references: [id])
