@@ -1,4 +1,3 @@
-import * as jose from "jose";
 import jwt from "jsonwebtoken";
 import prisma from "../prisma.js";
 

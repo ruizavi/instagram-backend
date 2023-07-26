@@ -16,6 +16,7 @@ async function createPost(req, res, next) {
 
     res.json(post);
   } catch (error) {
+    console.log(error)
     next(error);
   }
 }
@@ -43,17 +44,21 @@ async function listPosts(req, res, next) {
         comments: true,
         votes: true,
       },
+      orderBy: {
+        createdAt: "desc"
+      }
     });
 
     const response = posts.map((post) => ({
+      id: post.id,
       userID: post.userID,
       username: post.user.username,
       photo:
         post.profile.photo === null
           ? null
-          : `${req.get("host")}/images/${post.profile.photo}`,
+          : `http://${req.get("host")}/images/${post.profile.photo}`,
       media: post.media.map(
-        (media) => `${req.get("host")}/images/${media.resource}`
+        (media) => `http://${req.get("host")}/images/${media.resource}`
       ),
       description: post.body,
       comments: post.comments.length,
@@ -108,7 +113,7 @@ async function viewComment(req, res, next) {
       photo:
         c.user.profile.photo === null
           ? null
-          : `${req.get("host")}/images/${c.user.profile.photo}`,
+          : `http://${req.get("host")}/images/${c.user.profile.photo}`,
       username: c.user.username,
       content: c.comment,
       createAt: c.createdAt,
@@ -123,15 +128,20 @@ async function viewComment(req, res, next) {
 async function addVote(req, res, next) {
   const { id: postID } = req.params;
   const { id: userID } = req.user;
-
+  console.log(postID, userID)
   try {
-    await prisma.vote.create({
+    const x = await prisma.vote.create({
       data: {
-        postID,
+        postID: Number(postID),
         userID,
       },
     });
+
+    console.log(x)
+
+    res.json(x)
   } catch (error) {
+    console.log(error)
     next(error);
   }
 }
