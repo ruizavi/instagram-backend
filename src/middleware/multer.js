@@ -3,7 +3,7 @@ import { v4 } from "uuid";
 import { extname } from "path";
 
 const storage = multer.diskStorage({
-  destination: "./tmp",
+  destination: "./upload/images",
   filename: function (req, file, cb) {
     const name = v4();
 

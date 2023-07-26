@@ -41,9 +41,10 @@ model Profile {
   firstName String
   lastName  String
   bio       String?
-  photo     Bytes?
+  photo     String?
 
-  user User @relation(fields: [userID], references: [id])
+  user  User   @relation(fields: [userID], references: [id])
+  posts Post[]
 }
 
 model Follower {
@@ -57,24 +58,25 @@ model Follower {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   userID    Int
   body      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime? 
-  isPrivate Boolean  @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  isPrivate Boolean   @default(false)
 
   user     User      @relation(fields: [userID], references: [id])
   media    Media[]
   comments Comment[]
   votes    Vote[]
+  profile  Profile   @relation(fields: [userID], references: [userID])
 }
 
 model Media {
   id       Int   @id @default(autoincrement())
   postID   Int
-  resource Bytes
+  resource String
 
   post Post @relation(fields: [postID], references: [id])
 }
