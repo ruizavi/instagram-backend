@@ -131,7 +131,7 @@ async function addVote(req, res, next) {
 
   try {
     const vote = await prisma.vote.findUnique({
-      where: { postID_userID: { postID, userID } },
+      where: { postID_userID: { postID: Number(postID), userID } },
     });
 
     if (vote === null) {
@@ -145,7 +145,9 @@ async function addVote(req, res, next) {
       return res.json("Voto creado");
     }
 
-    await prisma.vote.delete({ where: { postID_userID: { postID, userID } } });
+    await prisma.vote.delete({
+      where: { postID_userID: { postID: Number(postID), userID } },
+    });
 
     res.json("Voto eliminado");
   } catch (error) {

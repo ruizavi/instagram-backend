@@ -9,7 +9,7 @@ const NewPost = z.object({
 const NewComment = z.object({
   comment: z.string(),
   postID: z.number(),
-  userID: z.number,
+  userID: z.number(),
 });
 
 export { NewPost, NewComment };
