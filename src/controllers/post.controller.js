@@ -193,7 +193,7 @@ async function viewPost(req, res, next) {
       },
     });
 
-    return {
+    res.json({
       id: posts.id,
       username: posts.user.username,
       photo:
@@ -212,7 +212,7 @@ async function viewPost(req, res, next) {
       description: posts.body,
       date: posts.createdAt,
       votes: posts.votes.length,
-    };
+    });
   } catch (error) {
     next(error);
   }
