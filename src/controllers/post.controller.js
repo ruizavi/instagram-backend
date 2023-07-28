@@ -16,7 +16,7 @@ async function createPost(req, res, next) {
 
     res.json(post);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(error);
   }
 }
@@ -45,8 +45,8 @@ async function listPosts(req, res, next) {
         votes: true,
       },
       orderBy: {
-        createdAt: "desc"
-      }
+        createdAt: "desc",
+      },
     });
 
     const response = posts.map((post) => ({
@@ -128,20 +128,28 @@ async function viewComment(req, res, next) {
 async function addVote(req, res, next) {
   const { id: postID } = req.params;
   const { id: userID } = req.user;
-  console.log(postID, userID)
+
   try {
-    const x = await prisma.vote.create({
-      data: {
-        postID: Number(postID),
-        userID,
-      },
+    const vote = await prisma.vote.findUnique({
+      where: { postID_userID: { postID, userID } },
     });
 
-    console.log(x)
+    if (vote === null) {
+      await prisma.vote.create({
+        data: {
+          postID: Number(postID),
+          userID,
+        },
+      });
 
-    res.json(x)
+      return res.json("Voto creado");
+    }
+
+    await prisma.vote.delete({ where: { postID_userID: { postID, userID } } });
+
+    res.json("Voto eliminado");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(error);
   }
 }
