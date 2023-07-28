@@ -172,4 +172,47 @@ async function removeVote(req, res, next) {
   }
 }
 
-export { createPost, listPosts, addComment, viewComment, addVote, removeVote };
+async function viewPost(req, res, next) {
+  const id = Number(req.params.id);
+
+  try {
+    const posts = await prisma.post.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        user: { select: { username: true } },
+        profile: { select: { photo: true } },
+        media: { select: { resource: true } },
+        comments: { include: { user: { include: { profile: true } } } },
+        votes: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return {
+      id: posts.id,
+      username: posts.user.username,
+      photo:
+        posts.profile.photo === null
+          ? null
+          : `http://${req.get("host")}/images/${posts.profile.photo}`,
+      comments: posts.comments.map((c) => ({
+        username: c.user.username,
+        photo: c.user.profile.photo,
+        comment: c.comment,
+      })),
+      media: posts.media.map(
+        (media) => `http://${req.get("host")}/images/${media.resource}`
+      ),
+      description: posts.body,
+      date: posts.createdAt,
+    };
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { createPost, listPosts, addComment, viewComment, addVote, removeVote, viewPost};

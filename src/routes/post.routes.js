@@ -8,6 +8,7 @@ import {
   listPosts,
   removeVote,
   viewComment,
+  viewPost,
 } from "../controllers/post.controller.js";
 
 const router = Router();
@@ -28,7 +29,7 @@ const router = Router();
 router.post("/", authenticate, upload.array("media", 8), createPost);
 router.get("/", authenticate, listPosts);
 
-router.get("/:id");
+router.get("/:id", authenticate, viewPost);
 
 router.post("/:id/comment", authenticate, addComment);
 router.get("/:id/comment", authenticate, viewComment);
