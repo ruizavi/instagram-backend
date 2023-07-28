@@ -78,7 +78,11 @@ async function addComment(req, res, next) {
   const { comment } = req.body;
 
   try {
-    const parsedBody = NewComment.parse({ userID, postID, comment });
+    const parsedBody = NewComment.parse({
+      userID,
+      postID: Number(postID),
+      comment,
+    });
 
     const newComment = await prisma.comment.create({
       data: {
@@ -203,16 +207,26 @@ async function viewPost(req, res, next) {
         username: c.user.username,
         photo: c.user.profile.photo,
         comment: c.comment,
+        id: c.id,
       })),
       media: posts.media.map(
         (media) => `http://${req.get("host")}/images/${media.resource}`
       ),
       description: posts.body,
       date: posts.createdAt,
+      votes: posts.votes.length,
     };
   } catch (error) {
     next(error);
   }
 }
 
-export { createPost, listPosts, addComment, viewComment, addVote, removeVote, viewPost};
+export {
+  createPost,
+  listPosts,
+  addComment,
+  viewComment,
+  addVote,
+  removeVote,
+  viewPost,
+};
