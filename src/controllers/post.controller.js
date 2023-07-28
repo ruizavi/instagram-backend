@@ -191,9 +191,6 @@ async function viewPost(req, res, next) {
         comments: { include: { user: { include: { profile: true } } } },
         votes: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
     });
 
     return {
