@@ -15,6 +15,7 @@ model User {
   email    String @unique
   password String
   username String @unique
+  hash     String @unique
 
   profile    Profile?
   follower   Follower[] @relation("follower")
@@ -23,17 +24,6 @@ model User {
   posts    Post[]
   comments Comment[]
   votes    Vote[]
-  sessions Session[]
-}
-
-model Session {
-  hash        String
-  destination String @unique
-  userID      Int
-
-  user User @relation(fields: [userID], references: [id])
-
-  @@id([destination, userID])
 }
 
 model Profile {
@@ -96,8 +86,8 @@ model Vote {
   postID Int
   userID Int
 
-  @@id([postID, userID])
-
   post Post @relation(fields: [postID], references: [id])
   user User @relation(fields: [userID], references: [id])
+
+  @@id([postID, userID])
 }

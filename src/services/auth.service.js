@@ -11,18 +11,20 @@ async function createUser(data) {
     SignUpBody.parse(data);
 
   let photoBuffer = null;
-  
+
   if (photo != null) {
     photoBuffer = await readFile(photo.path);
   }
 
   const hashPass = await argon.hash(password);
+  const hash = crypto.randomBytes(32).toString("hex");
 
   await prisma.user.create({
     data: {
       email,
       username,
       password: hashPass,
+      hash,
       profile: { create: { firstName, lastName, bio, photo: photoBuffer } },
     },
   });
@@ -38,17 +40,9 @@ async function findUserByEmail(email) {
   });
 }
 
-async function createSession(id) {
-  const hash = crypto.randomBytes(32).toString("hex");
-  const aud = uuid();
-
+function createToken(id, hash) {
   const token = jwt.sign({ id }, hash, {
-    audience: aud,
     subject: String(id),
-  });
-
-  await prisma.session.create({
-    data: { destination: aud, userID: id, hash },
   });
 
   return token;
@@ -69,7 +63,7 @@ async function signinService(payload) {
 
   if (!isPassMatch) throw new Error();
 
-  const token = await createSession(user.id);
+  const token = createToken(user.id, user.hash);
 
   return token;
 }
