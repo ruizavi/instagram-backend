@@ -1,5 +1,7 @@
 import prisma from "../prisma.js";
 
+const regex = /(=?(.mp4))/;
+
 const viewProfileService = async (id, domain) => {
   const Id = Number(id);
 
@@ -24,10 +26,12 @@ const viewProfileService = async (id, domain) => {
     username: profile.username,
     name: profile.profile.firstName + " " + profile.profile.lastName,
     photo: profile.profile.photo,
-    posts: profile.posts.map((post) => ({
-      id: post.id,
-      media: `http://${domain}/images/${post.media[0]}`,
-    })),
+    posts: profile.posts
+      .filter((post) => !regex.test(post.media[0].resource))
+      .map((post) => ({
+        id: post.id,
+        media: `http://${domain}/images/${post.media[0].resource}`,
+      })),
     countPosts: profile.posts.length,
     countFollowing,
     countFollower,

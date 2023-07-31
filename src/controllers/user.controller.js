@@ -71,7 +71,7 @@ const viewProfile = async (req, res, next) => {
       return res.json(await viewProfileService(id, req.get("host")));
     }
 
-    res.json(await viewProfileService(user.id));
+    res.json(await viewProfileService(user.id, req.get("host")));
   } catch (error) {
     next(error);
   }
