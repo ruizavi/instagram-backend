@@ -1,6 +1,67 @@
 import prisma from "../prisma.js";
 import { viewProfileService } from "../services/user.service.js";
 
+const viewFollowers = async (req, res, next) => {
+  const user = req.user;
+  const id = req.params.id;
+
+  const userID = Number(id || user.id);
+
+  try {
+    const followers = await prisma.follower.findMany({
+      where: {
+        followingID: userID,
+      },
+      include: { follower: { include: { profile: true } } },
+    });
+
+    res.json({
+      followersCount: followers.length,
+      followers: followers.map((f) => ({
+        id: f.followerID,
+        username: f.follower.username,
+        photo: f.follower.profile.photo,
+        name: [f.follower.profile.firstName, f.follower.profile.lastName].join(
+          " "
+        ),
+      })),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const viewFollowing = async (req, res, next) => {
+  const user = req.user;
+  const id = req.params.id;
+
+  const userID = Number(id || user.id);
+
+  try {
+    const followings = await prisma.follower.findMany({
+      where: {
+        followerID: userID,
+      },
+      include: { following: { include: { profile: true } } },
+    });
+
+    res.json({
+      followingCount: followings.length,
+      followers: followings.map((f) => ({
+        id: f.followingID,
+        username: f.following.username,
+        photo: f.following.profile.photo,
+        name: [
+          f.following.profile.firstName,
+          f.following.profile.lastName,
+        ].join(" "),
+      })),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const viewProfile = async (req, res, next) => {
   const user = req.user;
   const id = req.params.id;
@@ -100,4 +161,4 @@ const viewPost = async (req, res, next) => {
   }
 };
 
-export { viewProfile, followUser, viewPost };
+export { viewProfile, followUser, viewPost, viewFollowers, viewFollowing };
