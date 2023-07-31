@@ -103,16 +103,16 @@ async function viewComment(req, res, next) {
 
   try {
     const comments = await prisma.comment.findMany({
-      where: { postID: id },
+      where: { postID: Number(id) },
       include: {
         user: {
-          select: { username: true, id: true },
           include: { profile: { select: { photo: true } } },
         },
       },
     });
 
     const response = comments.map((c) => ({
+      id: c.id,
       userID: c.user.id,
       photo:
         c.user.profile.photo === null
@@ -146,39 +146,23 @@ async function addVote(req, res, next) {
         },
       });
 
-      return res.json("Voto creado");
+      return res.json({ isVoted: true });
     }
 
     await prisma.vote.delete({
       where: { postID_userID: { postID: Number(postID), userID } },
     });
 
-    res.json("Voto eliminado");
+    res.json({ isVoted: false });
   } catch (error) {
     console.log(error);
     next(error);
   }
 }
 
-async function removeVote(req, res, next) {
-  const { id: postID } = req.params;
-  const { id: userID } = req.user;
-
-  try {
-    await prisma.vote.delete({
-      data: {
-        postID,
-        userID,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
 async function viewPost(req, res, next) {
   const id = Number(req.params.id);
-
+  const user = req.user;
   try {
     const posts = await prisma.post.findUnique({
       where: {
@@ -212,18 +196,11 @@ async function viewPost(req, res, next) {
       description: posts.body,
       date: posts.createdAt,
       votes: posts.votes.length,
+      isVoted: posts.votes.some((v) => v.userID === user.id),
     });
   } catch (error) {
     next(error);
   }
 }
 
-export {
-  createPost,
-  listPosts,
-  addComment,
-  viewComment,
-  addVote,
-  removeVote,
-  viewPost,
-};
+export { createPost, listPosts, addComment, viewComment, addVote, viewPost };
