@@ -55,7 +55,6 @@ const followUser = async (req, res, next) => {
 const viewPost = async (req, res, next) => {
   const { id, post } = req.params;
   const user = req.user;
-
   const userID = Number(id || user.id);
 
   try {
@@ -65,13 +64,11 @@ const viewPost = async (req, res, next) => {
       orderBy: { createdAt: "asc" },
     });
 
-    const currentIndex = userPosts.findIndex((p) => p.id === Number(post));
+    if (userPosts.length === 0) return res.json({ message: "Not posts" });
 
-    if (currentIndex === -1) {
-      throw new Error(
-        "El ID de publicación especificado no corresponde a un post del usuario."
-      );
-    }
+    let currentIndex = userPosts.findIndex((p) => p.id === Number(post));
+
+    if (currentIndex === -1) currentIndex = 0;
 
     const currentPost = userPosts[currentIndex];
     const previousPost = currentIndex > 0 ? userPosts[currentIndex - 1] : null;
@@ -79,7 +76,7 @@ const viewPost = async (req, res, next) => {
       currentIndex < userPosts.length - 1 ? userPosts[currentIndex + 1] : null;
 
     res.json({
-      previousPost: previousPost.id,
+      previousPost: previousPost?.id || null,
       currentPost: {
         id: currentPost.id,
         userID: currentPost.user.id,
@@ -96,7 +93,7 @@ const viewPost = async (req, res, next) => {
         votes: currentPost.votes.length,
         isVoted: currentPost.votes.some((v) => v.userID === user.id),
       },
-      nextPost: nextPost.id,
+      nextPost: nextPost?.id || null,
     });
   } catch (error) {
     next(error);

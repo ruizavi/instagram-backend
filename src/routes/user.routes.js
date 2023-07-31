@@ -8,8 +8,8 @@ import {
 
 const router = Router();
 
+router.get("/:id?/post/:post?", authenticate, viewPost);
 router.get("/:id?", authenticate, viewProfile);
 router.get("/:id/follow", authenticate, followUser);
-router.get("/:id?/post/:post?", authenticate, viewPost);
 
 export default router;
