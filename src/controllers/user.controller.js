@@ -20,7 +20,7 @@ const viewFollowers = async (req, res, next) => {
       followers: followers.map((f) => ({
         id: f.followerID,
         username: f.follower.username,
-        photo: f.follower.profile.photo,
+        photo: `http://${req.get("host")}/images/${f.follower.profile.photo}`,
         name: [f.follower.profile.firstName, f.follower.profile.lastName].join(
           " "
         ),
@@ -50,7 +50,7 @@ const viewFollowing = async (req, res, next) => {
       followers: followings.map((f) => ({
         id: f.followingID,
         username: f.following.username,
-        photo: f.following.profile.photo,
+        photo: `http://${req.get("host")}/images/${f.following.profile.photo}`,
         name: [
           f.following.profile.firstName,
           f.following.profile.lastName,
@@ -68,7 +68,7 @@ const viewProfile = async (req, res, next) => {
 
   try {
     if (id !== undefined) {
-      return res.json(await viewProfileService(id));
+      return res.json(await viewProfileService(id, req.get("host")));
     }
 
     res.json(await viewProfileService(user.id));

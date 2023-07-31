@@ -1,6 +1,6 @@
 import prisma from "../prisma.js";
 
-const viewProfileService = async (id) => {
+const viewProfileService = async (id, domain) => {
   const Id = Number(id);
 
   const profile = await prisma.user.findUnique({
@@ -26,7 +26,7 @@ const viewProfileService = async (id) => {
     photo: profile.profile.photo,
     posts: profile.posts.map((post) => ({
       id: post.id,
-      media: post.media[0],
+      media: `http://${domain}/images/${post.media[0]}`,
     })),
     countPosts: profile.posts.length,
     countFollowing,
