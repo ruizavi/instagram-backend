@@ -81,6 +81,9 @@ const followUser = async (req, res, next) => {
   const user = req.user;
   const id = req.params.id;
   try {
+    if (user.id === Number(id))
+      return res.json({ message: "it is not possible to follow yourself" });
+
     const isFollowed = await prisma.follower.findUnique({
       where: {
         followerID_followingID: {
