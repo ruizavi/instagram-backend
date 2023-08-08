@@ -141,22 +141,20 @@ const viewPost = async (req, res, next) => {
 
     res.json({
       previousPost: previousPost?.id || null,
-      currentPost: {
-        id: currentPost.id,
-        userID: currentPost.user.id,
-        username: currentPost.user.username,
-        photo:
-          currentPost.profile.photo === null
-            ? null
-            : `http://${req.get("host")}/images/${currentPost.profile.photo}`,
-        media: currentPost.media.map(
-          (media) => `http://${req.get("host")}/images/${media.resource}`
-        ),
-        description: currentPost.body,
-        date: currentPost.createdAt,
-        votes: currentPost.votes.length,
-        isVoted: currentPost.votes.some((v) => v.userID === user.id),
-      },
+      id: currentPost.id,
+      userID: currentPost.user.id,
+      username: currentPost.user.username,
+      photo:
+        currentPost.profile.photo === null
+          ? null
+          : `http://${req.get("host")}/images/${currentPost.profile.photo}`,
+      media: currentPost.media.map(
+        (media) => `http://${req.get("host")}/images/${media.resource}`
+      ),
+      description: currentPost.body,
+      date: currentPost.createdAt,
+      votes: currentPost.votes.length,
+      isVoted: currentPost.votes.some((v) => v.userID === user.id),
       nextPost: nextPost?.id || null,
     });
   } catch (error) {

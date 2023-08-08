@@ -21,8 +21,8 @@ const viewProfileService = async (id, domain) => {
       followingID: Id,
     },
   });
-
   return {
+    id: profile.id,
     username: profile.username,
     name: profile.profile.firstName + " " + profile.profile.lastName,
     photo: profile.profile.photo,
