@@ -6,10 +6,7 @@ const SignUpBody = z.object({
   password: z
     .string()
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*]).{8,}$/),
-  firstName: z.string().regex(/^[a-zA-Z/s]*$/),
-  lastName: z.string().regex(/^[a-zA-Z/s]*$/),
-  bio: z.string().optional(),
-  photo: z.any().optional(),
+  fullname: z.string().regex(/^(?![\s.]+$)[a-zA-Z\s.]*$/),
 });
 
 const SignInBody = z.object({

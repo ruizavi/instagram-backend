@@ -1,20 +1,11 @@
 import crypto from "crypto";
-import { v4 as uuid } from "uuid";
 import jwt from "jsonwebtoken";
 import argon from "argon2";
 import { SignInBody, SignUpBody } from "../validations/User.js";
 import prisma from "../prisma.js";
-import { readFile } from "fs/promises";
 
 async function createUser(data) {
-  const { email, firstName, lastName, password, username, bio, photo } =
-    SignUpBody.parse(data);
-
-  let photoBuffer = null;
-
-  if (photo != null) {
-    photoBuffer = await readFile(photo.path);
-  }
+  const { email, fullname, password, username } = SignUpBody.parse(data);
 
   const hashPass = await argon.hash(password);
   const hash = crypto.randomBytes(32).toString("hex");
@@ -25,7 +16,7 @@ async function createUser(data) {
       username,
       password: hashPass,
       hash,
-      profile: { create: { firstName, lastName, bio, photo: photoBuffer } },
+      profile: { create: { fullname } },
     },
   });
 }
@@ -37,6 +28,7 @@ async function validatePassword(hash, pass) {
 async function findUserByEmail(email) {
   return await prisma.user.findUnique({
     where: { email },
+    include: { profile: true },
   });
 }
 
@@ -65,7 +57,13 @@ async function signinService(payload) {
 
   const token = createToken(user.id, user.hash);
 
-  return token;
+  return {
+    token,
+    img: user.profile.photo,
+    fullname: user.profile.fullname,
+    username: user.username,
+    id: user.id,
+  };
 }
 
 async function signoutService(id, aud) {
