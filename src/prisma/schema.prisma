@@ -27,11 +27,10 @@ model User {
 }
 
 model Profile {
-  userID    Int     @id
-  firstName String
-  lastName  String
-  bio       String?
-  photo     String?
+  userID   Int     @id
+  fullname String
+  bio      String?
+  photo    String?
 
   user  User   @relation(fields: [userID], references: [id])
   posts Post[]
