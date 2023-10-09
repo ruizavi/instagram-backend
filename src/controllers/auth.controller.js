@@ -6,7 +6,7 @@ import {
 
 async function signup(req, res, next) {
   const body = req.body;
-  const data = {...body, photo: req.file}
+  const data = { ...body, photo: req.file };
   try {
     await signupService(data);
 
@@ -18,11 +18,11 @@ async function signup(req, res, next) {
 
 async function signin(req, res, next) {
   const body = req.body;
-  
-  try {
-    const token = await signinService(body);
 
-    res.json(token);
+  try {
+    const data = await signinService(body);
+
+    res.json({ ...data, message: "Log In Successfully" });
   } catch (error) {
     next(error);
   }
