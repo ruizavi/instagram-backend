@@ -4,9 +4,9 @@ import { NewComment } from "../validations/Post.js";
 
 async function createPost(req, res, next) {
   const user = req.user;
-  const files = req.files;
+  const files = req.file;
   const description = req.body.description;
-
+  
   try {
     const post = await createPostService({
       description,

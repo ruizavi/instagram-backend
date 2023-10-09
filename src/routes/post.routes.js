@@ -12,7 +12,7 @@ import {
 
 const router = Router();
 
-router.post("/", authenticate, upload.array("media", 8), createPost);
+router.post("/", authenticate, upload.single("media"), createPost);
 router.get("/", authenticate, listPosts);
 
 router.get("/:id", authenticate, viewPost);

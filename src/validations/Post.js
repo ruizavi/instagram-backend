@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const NewPost = z.object({
   description: z.string(),
-  media: z.any().array(),
+  media: z.any(),
   user: z.number(),
 });
 
